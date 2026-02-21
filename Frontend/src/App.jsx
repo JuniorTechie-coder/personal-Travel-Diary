@@ -1,7 +1,9 @@
 import React from 'react'
 import {BrowserRouter ,Routes , Route} from "react-router-dom"
 import Home from  "./pages/Home/Home"
-import SignUp from './pages/Auth/SignUp'
+import Login from "./pages/Auth/Login"
+import SignUp from "./pages/Auth/SignUp"
+
 const App = () => {
   return  <>
          <BrowserRouter>
