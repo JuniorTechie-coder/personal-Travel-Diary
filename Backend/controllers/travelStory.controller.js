@@ -36,3 +36,19 @@ res.status(201).json({
     next(error)
 }
 }
+
+
+export const getAllTravelStory = async(req, res, next) => {
+    const userId = req.user.id
+
+    try {
+        const travelStories = await TravelStory.find({userId: userId}).sort({
+            isFavorite: -1, 
+        })
+
+        res.status(200).json({ stories: travelStories })
+    } catch (error) {
+        next(error)
+        
+    }
+}
