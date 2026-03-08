@@ -106,3 +106,43 @@ export const deleteImage = async(req, res, next) => {
         next(error)
     }
 }
+
+export const editTravelStory = async(req, res, next) => {
+    const {id} = req.params
+    const {title, story, visitedLoaction, imageUrl, visitedDate} = req.body
+    const userId =req.user.id
+
+    //validate required field 
+if (!title || !story || !visitedLoaction || !imageUrl || !visitedDate){
+    return next(errorHandlar(400, "All fields are required"))
+}
+// converted visited date from milliseconds to Date Objects 
+const parsedVisitedDate = new Date(parseInt(visitedDate))
+
+try {
+    const travelStory = await  TravelStory.findOne({ _id: id, userId: userId })
+
+    if(!travelStory){
+        next(errorHandlar(404, "Travel Story not found!"))
+    }
+
+    const placeholderImageUrl = `http://localhost:3000/assets/placeholderImage.png`
+
+     
+    travelStory.title = title
+    travelStory.story = story
+    travelStory.visitedLocation = visitedLoaction
+    travelStory.imageUrl = imageUrl || placeholderImageUrl
+    travelStory.visitedDate = parsedVisitedDate
+
+    await travelStory.save()
+
+    res.status(200).json({
+     story: travelStory,
+     message: "Travel story updated successfully!",
+    })
+} catch (error) {
+    next(error)
+    
+}
+}
