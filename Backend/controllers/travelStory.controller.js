@@ -185,3 +185,73 @@ console.log("filePath:", filePath)
         
     }
 }
+
+export const updateIsFavorite = async(req, res, next) => {
+    const {id} = req.params
+    const {isFavorite} = req.body
+    const userId = req.user.id
+
+    try {
+        const travelStory = await TravelStory.findOne({ _id: id, userId: userId })
+
+        if(!travelStory){
+            return next(errorHandlar(404, "Travel Story not found!"))
+        }
+        travelStory.isFavorite = isFavorite 
+
+        await travelStory.save()
+
+        res.status(200).json({ story: travelStory, message: "Updated successfully! "})
+    } catch (error) {
+        next(error)
+        
+    }
+}
+
+export const searchTravelStory = async(req, res, next) => {
+    const {query} = req.query
+    const userId = req.user.id
+
+    if(!query){
+        return next(errorHandlar(404, "Query is required! "))
+    }
+
+    try {
+        const searchResults = await TravelStory.find({
+            userId : userId,
+            $or: [
+                {title: {$regex: query, $options: "i"} },
+                {story: {$regex: query, $options: "i"} },    
+                {visitedLocation: {$regex: query, $options: "i"} },
+            ],
+        }).sort({ isFavorite: -1 })
+
+        res.status(200).json({
+            stories: searchResults,
+        
+        })
+    } catch (error) {
+        next(error)
+        
+    }
+}
+
+export const filterTravelStories = async(req, res, next) => {
+    const {startDate, endDate} = req.query
+    const userId = req.user.id
+
+    try {
+        const start = new Date(parseInt(startDate))
+        const end = new Date(parseInt(endDate))
+
+        const filteredStories = await  TravelStory.find({
+            userId: userId,
+            visitedDate:  {$gte: start, $lte: end}
+        }).sort({isFavorite: -1 })
+
+        res.status(200).json({stories: filteredStories })
+    } catch (error) {
+        next(error)
+        
+    }
+}
