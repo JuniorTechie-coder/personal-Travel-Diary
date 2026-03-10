@@ -2,15 +2,54 @@ import React from 'react'
 import PasswordInput from '../../components/PasswordInput'
 import { useNavigate } from "react-router-dom"
 import { useState } from 'react'
+import axiosInstance from '../../utils/axiosInstance'
+import { validateEmail } from '../../utils/helper'
 
-const Login = () => {
+const Login =  () => {
   const navigate = useNavigate()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
-  const handleSubmit = async (e) => { }
+   
+  const handleSubmit = async (e) => { 
+    e.preventDefault()
+
+    if(!validateEmail(email)) {
+      setError("Please enter a valid email address.")
+        return
+      
+    }
+
+    if(!password){
+      setError("Please enter your password.")
+      return 
+    }
+
+    setError(null)
+
+    //Login api call
+  try {
+    const response = await axiosInstance.post("/auth/signin", {
+      email,
+      password,
+     })
+
+    if(response.data){
+      navigate("/")
+    }
+  } catch (error) { 
+    console.log(error)
+    if(error.response && error.response.data && error.response.data.message){
+      setError(error?.response?.data?.message)
+    }else{
+      setError("Something went wrong> please try again later. ")
+    }
+    }
+  }
+  
 
   return (
+
     <div className="h-screen bg-cyan-50 overflow-hidden relative">
 
       <div className="login-ui-box right-10 -top-40" />
@@ -40,6 +79,8 @@ const Login = () => {
             />
 
             <PasswordInput value={password} onChange={(e) => {setPassword(e.target.value)}}/>
+
+              {error && <p  className='text-red-500 text-xs pb-1'> {error}</p>}
 
             <button type="submit" className='btn-primary'>
               LOGIN
