@@ -6,12 +6,12 @@ import path from "path"
 import fs from "fs"
 
 export const addTravelStory = async (req, res, next) => {
-const {title, story, visitedLoaction, imageUrl, visitedDate} = req.body
+const {title, story, visitedLocation, imageUrl, visitedDate, coordinates} = req.body || {}
 
 
 
 // validate required field
-if (!title || !story || !visitedLoaction || !imageUrl || !visitedDate){
+if (!title || !story || !visitedLocation || !imageUrl || !visitedDate){
     return next(errorHandlar(400, "All fields are required"))
 
 }
@@ -23,13 +23,14 @@ const parsedVisitedDate = new Date(parseInt(visitedDate))
 
 try {
     const travelStory = new TravelStory({
-        title,
-        story,
-        visitedLoaction,
-        userId,
-        imageUrl,
-        visitedDate: parsedVisitedDate,     
-    })
+    title,
+    story,
+    visitedLocation,
+    userId,
+    imageUrl,
+    visitedDate: parsedVisitedDate,
+    coordinates: coordinates || { lat: null, lng: null },
+})
     await travelStory.save()
 
 res.status(201).json({
@@ -109,11 +110,11 @@ export const deleteImage = async(req, res, next) => {
 
 export const editTravelStory = async(req, res, next) => {
     const {id} = req.params
-    const {title, story, visitedLoaction, imageUrl, visitedDate} = req.body
+    const {title, story, visitedLocation, imageUrl, visitedDate, coordinates, isPublic} = req.body
     const userId =req.user.id
 
     //validate required field 
-if (!title || !story || !visitedLoaction || !imageUrl || !visitedDate){
+if (!title || !story ||  !imageUrl || !visitedDate){
     return next(errorHandlar(400, "All fields are required"))
 }
 // converted visited date from milliseconds to Date Objects 
@@ -131,10 +132,11 @@ try {
      
     travelStory.title = title
     travelStory.story = story
-    travelStory.visitedLocation = visitedLoaction
+    travelStory.visitedLocation = visitedLocation
     travelStory.imageUrl = imageUrl || placeholderImageUrl
     travelStory.visitedDate = parsedVisitedDate
-
+    travelStory.coordinates = coordinates || travelStory.coordinates
+    travelStory.isPublic = isPublic !== undefined ? isPublic : travelStory.isPublic
     await travelStory.save()
 
     res.status(200).json({

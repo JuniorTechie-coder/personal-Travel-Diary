@@ -33,6 +33,16 @@ const travelStorySchema = new  mongoose.Schema({
         required: true,
      },
 
+     coordinates: {
+        lat: { type: Number, default: null },
+        lng: { type: Number, default: null },
+     },
+
+     isPublic: {
+        type: Boolean,
+        default: false,
+     },
+
      visitedDate: {
         type: Date,
         required: true,

@@ -8,8 +8,8 @@ const userSchema = new mongoose.Schema({
     },
 
     email: {
-        type : String,
-        required : true,
+        type: String,
+        required: true,
         unique: true,
     },
 
@@ -17,8 +17,23 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-}, {timestamps: true} 
-)
+
+    bio: {
+        type: String,
+        default: "",
+    },
+
+    profilePhoto: {
+        type: String,
+        default: "",
+    },
+
+    country: {
+        type: String,
+        default: "",
+    },
+
+}, {timestamps: true})
 
 const User = mongoose.model("User", userSchema)
 
