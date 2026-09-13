@@ -1,13 +1,9 @@
+// Create a file: Frontend/src/utils/axiosInstance.js
 import axios from "axios";
 
-const BASE_URL = "http://localhost:3000/api"
-
 const axiosInstance = axios.create({
-    baseURL: BASE_URL,
-    withCredentials: true,
-    headers: {
-        "Content-Type": "application/json",  
-    },
-})
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000",
+  withCredentials: true,
+});
 
-export default axiosInstance
+export default axiosInstance;
