@@ -24,9 +24,11 @@ const app = express()
 
 //Enable CORS for frontend (Replace with your frontend URL)
 app.use(cors({
-    origin: "http://localhost:5173", //frontend URL
-    methods: ["GET", "POST", "PUT", "DELETE"], //Allow CRUD operations
-    credentials: true, //Allow cookies & Authorization headers
+    origin: process.env.NODE_ENV === "production" 
+        ? process.env.FRONTEND_URL   // set this in Render env vars
+        : "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
 }))
 
 app.use(cookieParser())
